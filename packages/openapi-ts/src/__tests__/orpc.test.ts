@@ -167,6 +167,7 @@ describe('oRPC plugin', () => {
     expect(content).toContain("import { openapi } from '@orpc/openapi';");
     expect(content).toContain('export const getItems = oc.meta(openapi({');
     expect(content).not.toContain('oc.route(');
+    expect(content).not.toContain('queryStyles');
   });
 
   it('infers oRPC v1 output from installed @orpc/contract v1', async () => {

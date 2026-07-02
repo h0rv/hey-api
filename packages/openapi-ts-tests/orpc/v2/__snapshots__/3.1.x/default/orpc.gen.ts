@@ -19,6 +19,8 @@ export const getItems = oc.meta(openapi({
     filters: 'comma-delimited-object',
     ids: 'array',
     names: 'space-delimited-array',
+    pipeFilters: 'pipe-delimited-object',
+    spaceFilters: 'space-delimited-object',
     tags: 'comma-delimited-array'
   },
   summary: 'Get all items',

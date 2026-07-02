@@ -14,6 +14,8 @@ export const zGetItemsQuery = z.object({
   codes: z.array(z.string()).optional(),
   category: z.string().optional(),
   filters: z.record(z.string(), z.string()).optional(),
+  pipeFilters: z.record(z.string(), z.string()).optional(),
+  spaceFilters: z.record(z.string(), z.string()).optional(),
   facets: z.record(z.string(), z.string()).optional()
 });
 

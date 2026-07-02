@@ -62,6 +62,24 @@ paths:
             type: object
             additionalProperties:
               type: string
+        - name: pipeFilters
+          in: query
+          description: Filter by pipe-delimited field pairs
+          required: false
+          style: pipeDelimited
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+        - name: spaceFilters
+          in: query
+          description: Filter by space-delimited field pairs
+          required: false
+          style: spaceDelimited
+          schema:
+            type: object
+            additionalProperties:
+              type: string
         - name: facets
           in: query
           description: Filter by exploded field pairs
