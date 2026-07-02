@@ -93,7 +93,7 @@ export default {
 
 ### Query Styles
 
-When generating oRPC v2 contracts, `queryStyles` metadata is inferred by default so OpenAPI query parameters keep their original serialization behavior.
+When generating oRPC v2 contracts, `queryStyles` metadata is inferred by default for OpenAPI serialization styles supported by oRPC, so arrays and delimited objects keep their original serialization behavior.
 
 ```ts title="orpc.gen.ts"
 const getItems = oc.meta(
@@ -113,6 +113,8 @@ const getItems = oc.meta(
 ```
 
 You can disable this metadata when you want oRPC's default bracket notation.
+
+oRPC does not currently expose a `queryStyles` value for form-exploded objects, so those parameters use oRPC's default bracket notation.
 
 ```js {7} title="openapi-ts.config.ts"
 export default {

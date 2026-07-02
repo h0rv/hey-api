@@ -13,7 +13,8 @@ export const zGetItemsQuery = z.object({
   names: z.array(z.string()).optional(),
   codes: z.array(z.string()).optional(),
   category: z.string().optional(),
-  filters: z.record(z.string(), z.string()).optional()
+  filters: z.record(z.string(), z.string()).optional(),
+  facets: z.record(z.string(), z.string()).optional()
 });
 
 /**

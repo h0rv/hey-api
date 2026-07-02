@@ -62,6 +62,16 @@ paths:
             type: object
             additionalProperties:
               type: string
+        - name: facets
+          in: query
+          description: Filter by exploded field pairs
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: object
+            additionalProperties:
+              type: string
       responses:
         '200':
           description: List of items

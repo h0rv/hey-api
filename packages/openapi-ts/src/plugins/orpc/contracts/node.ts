@@ -74,6 +74,12 @@ function getQueryStyle(parameter: IR.ParameterObject): QueryStyle | undefined {
   }
 
   if (parameter.schema.type === 'object') {
+    // oRPC does not currently expose a queryStyles value for form-exploded
+    // objects, so leave those on its bracket-notation default.
+    if (parameter.style === 'form' && parameter.explode) {
+      return;
+    }
+
     if (parameter.style === 'form' && !parameter.explode) {
       return 'comma-delimited-object';
     }

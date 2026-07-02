@@ -120,7 +120,7 @@ const addPet = oc
 ```
   </TabItem>
   <TabItem label="config">
-```js {8,11} title="openapi-ts.config.ts"
+```js {8-9,12} title="openapi-ts.config.ts"
 export default {
   input: 'hey-api/backend', // sign up at app.heyapi.dev
   output: 'src/client',
@@ -128,6 +128,7 @@ export default {
     // ...other plugins
     {
       name: 'orpc',
+      compatibilityVersion: 1,
       validator: true, // or 'valibot'
     },
     {
@@ -144,7 +145,7 @@ You can choose to validate only inputs or outputs.
 
 <Tabs>
   <TabItem label="inputs">
-```js {9} title="openapi-ts.config.ts"
+```js {8,10} title="openapi-ts.config.ts"
 export default {
   input: 'hey-api/backend', // sign up at app.heyapi.dev
   output: 'src/client',
@@ -152,6 +153,7 @@ export default {
     // ...other plugins
     {
       name: 'orpc',
+      compatibilityVersion: 1,
       validator: {
         input: 'zod',
       },
@@ -161,7 +163,7 @@ export default {
 ```
   </TabItem>
   <TabItem label="outputs">
-```js {9} title="openapi-ts.config.ts"
+```js {8,10} title="openapi-ts.config.ts"
 export default {
   input: 'hey-api/backend', // sign up at app.heyapi.dev
   output: 'src/client',
@@ -169,6 +171,7 @@ export default {
     // ...other plugins
     {
       name: 'orpc',
+      compatibilityVersion: 1,
       validator: {
         output: 'zod',
       },
