@@ -58,8 +58,25 @@ function createContractSymbol(
   });
 }
 
-function getQueryStyle(parameter: IR.ParameterObject): QueryStyle | undefined {
-  if (parameter.schema.type === 'array' || parameter.schema.type === 'tuple') {
+function resolveSchema(plugin: OrpcPlugin['Instance'], schema: IR.SchemaObject): IR.SchemaObject {
+  let resolved = schema;
+  const visited = new Set<string>();
+
+  while (resolved.$ref && !visited.has(resolved.$ref)) {
+    visited.add(resolved.$ref);
+    resolved = plugin.context.resolveIrRef<IR.SchemaObject>(resolved.$ref);
+  }
+
+  return resolved;
+}
+
+function getQueryStyle(
+  plugin: OrpcPlugin['Instance'],
+  parameter: IR.ParameterObject,
+): QueryStyle | undefined {
+  const schema = resolveSchema(plugin, parameter.schema);
+
+  if (schema.type === 'array' || schema.type === 'tuple') {
     if (parameter.style === 'form') {
       return parameter.explode ? 'array' : 'comma-delimited-array';
     }
@@ -73,7 +90,7 @@ function getQueryStyle(parameter: IR.ParameterObject): QueryStyle | undefined {
     }
   }
 
-  if (parameter.schema.type === 'object') {
+  if (schema.type === 'object') {
     // oRPC does not currently expose a queryStyles value for form-exploded
     // objects, so leave those on its bracket-notation default.
     if (parameter.style === 'form' && parameter.explode) {
@@ -92,9 +109,14 @@ function getQueryStyle(parameter: IR.ParameterObject): QueryStyle | undefined {
       return 'space-delimited-object';
     }
   }
+
+  if (parameter.style === 'form' && !parameter.explode) {
+    return 'primitive';
+  }
 }
 
 function createQueryStylesObject(
+  plugin: OrpcPlugin['Instance'],
   operation: IR.OperationObject,
 ): ReturnType<typeof $.object> | undefined {
   const parameters = Object.values(operation.parameters?.query ?? {}).sort((a, b) =>
@@ -103,7 +125,7 @@ function createQueryStylesObject(
   const queryStyles = $.object();
 
   for (const parameter of parameters) {
-    const style = getQueryStyle(parameter);
+    const style = getQueryStyle(plugin, parameter);
     if (style) {
       queryStyles.prop(parameter.name, $.literal(style));
     }
@@ -125,9 +147,10 @@ function createRouteMetadataObject(
     .prop('method', $.literal(operation.method.toUpperCase()))
     .$if(operation.operationId, (o, v) => o.prop('operationId', $.literal(v)))
     .prop('path', $.literal(operation.path))
-    .$if(plugin.config.inferQueryStyles && plugin.config.compatibilityVersion === 2, (o) =>
-      o.prop('queryStyles', createQueryStylesObject(operation) ?? null),
-    )
+    .$if(plugin.config.inferQueryStyles && plugin.config.compatibilityVersion === 2, (o) => {
+      const queryStyles = createQueryStylesObject(plugin, operation);
+      return queryStyles ? o.prop('queryStyles', queryStyles) : o;
+    })
     .$if(successResponse.statusCode !== 200 && successResponse.statusCode, (o, v) =>
       o.prop('successStatus', $.literal(v)),
     )

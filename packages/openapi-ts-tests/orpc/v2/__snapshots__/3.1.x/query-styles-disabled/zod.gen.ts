@@ -2,6 +2,8 @@
 
 import * as z from 'zod';
 
+export const zIds = z.array(z.string());
+
 export const zItem = z.object({
   id: z.string(),
   name: z.string()
@@ -13,6 +15,8 @@ export const zGetItemsQuery = z.object({
   names: z.array(z.string()).optional(),
   codes: z.array(z.string()).optional(),
   category: z.string().optional(),
+  keyword: z.string().optional(),
+  refIds: zIds.optional(),
   filters: z.record(z.string(), z.string()).optional(),
   pipeFilters: z.record(z.string(), z.string()).optional(),
   spaceFilters: z.record(z.string(), z.string()).optional(),

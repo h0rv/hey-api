@@ -104,11 +104,35 @@ const queryStyleParameters = [
       type: 'string',
     },
   },
+  {
+    explode: false,
+    in: 'query',
+    name: 'keyword',
+    schema: {
+      type: 'string',
+    },
+    style: 'form',
+  },
+  {
+    in: 'query',
+    name: 'refIds',
+    schema: {
+      $ref: '#/components/schemas/Ids',
+    },
+  },
 ];
 
 function queryStyleSpec() {
   return {
     ...baseSpec,
+    components: {
+      schemas: {
+        Ids: {
+          items: { type: 'string' },
+          type: 'array',
+        },
+      },
+    },
     paths: {
       '/items': {
         get: {
@@ -197,8 +221,10 @@ describe('oRPC plugin', () => {
     expect(content).toContain("codes: 'pipe-delimited-array'");
     expect(content).toContain("filters: 'comma-delimited-object'");
     expect(content).toContain("ids: 'array'");
+    expect(content).toContain("keyword: 'primitive'");
     expect(content).toContain("names: 'space-delimited-array'");
     expect(content).toContain("pipeFilters: 'pipe-delimited-object'");
+    expect(content).toContain("refIds: 'array'");
     expect(content).toContain("spaceFilters: 'space-delimited-object'");
     expect(content).toContain("tags: 'comma-delimited-array'");
     expect(content).not.toContain('category:');
