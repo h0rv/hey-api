@@ -1,5 +1,5 @@
 ---
-"@hey-api/openapi-ts": minor
+"@hey-api/openapi-ts": patch
 ---
 
-**plugin(orpc)**: add oRPC v2 contract output with optional query styles
+**plugin(orpc)**: oRPC v2 support
