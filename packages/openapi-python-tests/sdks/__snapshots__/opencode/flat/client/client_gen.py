@@ -13,7 +13,7 @@ EXTRA_PREFIXES_MAP = {
 }
 
 
-def build_client_params(fields: list[dict[str, Any]], **kwargs) -> dict[str, Any]:
+def build_client_params(fields: list[dict[str, Any]], /, **kwargs) -> dict[str, Any]:
     """Build client parameters from flat keyword arguments.
 
     Args:

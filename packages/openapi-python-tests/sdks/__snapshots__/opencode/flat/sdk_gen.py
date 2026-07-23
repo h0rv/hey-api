@@ -7,8 +7,13 @@ from .pydantic_gen import CreatePet
 
 
 class Sdk(Client):
-    def get_pet(self, pet_id: str, include_owner: Optional[bool] = None):
-        params = build_client_params([{"in": "path", "key": "pet_id"}, {"in": "query", "key": "include_owner"}], pet_id=pet_id, include_owner=include_owner)
+    def get_pet(
+        self,
+        pet_id: str,
+        include_owner: Optional[bool] = None,
+        fields: Optional[list[str]] = None,
+    ):
+        params = build_client_params([{"in": "path", "key": "pet_id"}, {"in": "query", "key": "include_owner"}, {"in": "query", "key": "fields"}], pet_id=pet_id, include_owner=include_owner, fields=fields)
         return self.request_options("get", "/pets/{pet_id}", params)
 
     def create_pet(self, create_pet: CreatePet):

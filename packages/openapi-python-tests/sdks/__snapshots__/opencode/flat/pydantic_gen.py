@@ -15,6 +15,7 @@ class GetPetPath(BaseModel):
 
 class GetPetQuery(BaseModel):
     include_owner: Optional[bool] = None
+    fields: Optional[list[str]] = None
 
 
 class CreatePetBody(RootModel[CreatePet]):
