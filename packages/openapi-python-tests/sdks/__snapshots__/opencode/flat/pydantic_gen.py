@@ -20,3 +20,9 @@ class GetPetQuery(BaseModel):
 
 class CreatePetBody(RootModel[CreatePet]):
     root: CreatePet
+
+
+class CreatePetResponse(RootModel[CreatePet]):
+    """Created"""
+
+    root: CreatePet

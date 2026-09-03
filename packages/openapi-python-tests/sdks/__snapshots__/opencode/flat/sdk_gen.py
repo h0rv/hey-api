@@ -3,7 +3,7 @@
 from typing import Optional
 
 from .client import build_client_params, Client
-from .pydantic_gen import CreatePet
+from .pydantic_gen import CreatePet, CreatePetResponse
 
 
 class Sdk(Client):
@@ -12,10 +12,12 @@ class Sdk(Client):
         pet_id: str,
         include_owner: Optional[bool] = None,
         fields: Optional[list[str]] = None,
-    ):
+    ) -> None:
         params = build_client_params([{"in": "path", "key": "pet_id"}, {"in": "query", "key": "include_owner"}, {"in": "query", "key": "fields"}], pet_id=pet_id, include_owner=include_owner, fields=fields)
-        return self.request_options("get", "/pets/{pet_id}", params)
+        self.request_options("get", "/pets/{pet_id}", params)
+        return None
 
-    def create_pet(self, create_pet: CreatePet):
+    def create_pet(self, create_pet: CreatePet) -> CreatePetResponse:
         params = build_client_params([{"in": "body", "key": "create_pet", "map": "body"}], create_pet=create_pet)
-        return self.request_options("post", "/pets", params)
+        response = self.request_options("post", "/pets", params)
+        return CreatePetResponse.model_validate(response.json())
