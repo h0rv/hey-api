@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from .client import build_client_params, Client
+from .client import AsyncClient, build_client_params, Client
 from .pydantic_gen import CreatePet
 
 
@@ -19,3 +19,18 @@ class Sdk(Client):
     def create_pet(self, create_pet: CreatePet):
         params = build_client_params([{"in": "body", "key": "create_pet", "map": "body"}], create_pet=create_pet)
         return self.request_options("post", "/pets", params)
+
+
+class AsyncSdk(AsyncClient):
+    async def get_pet(
+        self,
+        pet_id: str,
+        include_owner: Optional[bool] = None,
+        fields: Optional[list[str]] = None,
+    ):
+        params = build_client_params([{"in": "path", "key": "pet_id"}, {"in": "query", "key": "include_owner"}, {"in": "query", "key": "fields"}], pet_id=pet_id, include_owner=include_owner, fields=fields)
+        return await self.request_options("get", "/pets/{pet_id}", params)
+
+    async def create_pet(self, create_pet: CreatePet):
+        params = build_client_params([{"in": "body", "key": "create_pet", "map": "body"}], create_pet=create_pet)
+        return await self.request_options("post", "/pets", params)

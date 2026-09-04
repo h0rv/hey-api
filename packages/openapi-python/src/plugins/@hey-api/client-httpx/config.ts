@@ -5,7 +5,10 @@ import type { HeyApiClientHttpxPlugin } from './types';
 
 export const defaultConfig: HeyApiClientHttpxPlugin['Config'] = {
   ...clientDefaultMeta,
-  config: clientDefaultConfig,
+  config: {
+    ...clientDefaultConfig,
+    asyncMode: true,
+  },
   handler() {
     // TODO: handler
   },
