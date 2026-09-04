@@ -33,6 +33,21 @@ function isUnparsableTopLevelSchema(schema: IR.SchemaObject): boolean {
   );
 }
 
+/** The schema a `$ref` points at, or nothing when it cannot be resolved. */
+function resolveIrRef({
+  $ref,
+  plugin,
+}: {
+  $ref: string;
+  plugin: HeyApiSdkPlugin['Instance'];
+}): IR.SchemaObject | undefined {
+  try {
+    return plugin.context.resolveIrRef<IR.SchemaObject>($ref);
+  } catch {
+    return undefined;
+  }
+}
+
 export function operationResponse({
   operation,
   plugin,
@@ -75,6 +90,27 @@ export function operationResponse({
     return { kind: 'raw' };
   }
 
+  const parseAs = mediaTypeToParseAs(bodyResponses[0]!.mediaType!);
+
+  // A response declared as nothing but a `$ref` is that component. Returning
+  // the component's own model lets a caller read its fields, instead of
+  // unwrapping a per-operation `RootModel` that holds it and nothing else.
+  // This is what the TypeScript SDK does, where such a response is typed as
+  // the referenced schema.
+  if (response.$ref) {
+    const target = resolveIrRef({ $ref: response.$ref, plugin });
+    if (target && !isUnparsableTopLevelSchema(target)) {
+      return {
+        kind: 'model',
+        parseAs,
+        symbol: plugin.referenceSymbol({
+          category: 'schema',
+          resourceId: response.$ref,
+        }),
+      };
+    }
+  }
+
   const symbol = plugin.querySymbol({
     category: 'schema',
     resource: 'operation',
@@ -86,7 +122,7 @@ export function operationResponse({
     return { kind: 'raw' };
   }
 
-  return { kind: 'model', parseAs: mediaTypeToParseAs(bodyResponses[0]!.mediaType!), symbol };
+  return { kind: 'model', parseAs, symbol };
 }
 
 type OperationParameters = {

@@ -3,7 +3,7 @@
 from typing import Optional
 
 from .client import build_client_params, Client
-from .pydantic_gen import CountThingsResponse, CreateThingResponse, GetThingDetailResponse, GetThingNoteResponse, GetThingPdfResponse, GetThingResponse, GetThingStatusResponse, ListThingsResponse, Thing
+from .pydantic_gen import CountThingsResponse, GetThingDetailResponse, GetThingNoteResponse, GetThingPdfResponse, GetThingStatusResponse, ListThingsResponse, Thing
 
 
 class Sdk(Client):
@@ -12,10 +12,10 @@ class Sdk(Client):
         self.request_options("delete", "/things/{thing_id}", params)
         return None
 
-    def get_thing(self, thing_id: str, response: Optional[str] = None) -> GetThingResponse:
+    def get_thing(self, thing_id: str, response: Optional[str] = None) -> Thing:
         params = build_client_params([{"in": "path", "key": "thing_id"}, {"in": "query", "key": "response"}], thing_id=thing_id, response=response)
         response_ = self.request_options("get", "/things/{thing_id}", params)
-        return GetThingResponse.model_validate(response_.json())
+        return Thing.model_validate(response_.json())
 
     def get_thing_pdf(self, thing_id: str) -> GetThingPdfResponse:
         params = build_client_params([{"in": "path", "key": "thing_id"}], thing_id=thing_id)
@@ -26,10 +26,10 @@ class Sdk(Client):
         response = self.client.get("/things")
         return ListThingsResponse.model_validate(response.json())
 
-    def create_thing(self, thing: Thing) -> CreateThingResponse:
+    def create_thing(self, thing: Thing) -> Thing:
         params = build_client_params([{"in": "body", "key": "thing", "map": "body"}], thing=thing)
         response = self.request_options("post", "/things", params)
-        return CreateThingResponse.model_validate(response.json())
+        return Thing.model_validate(response.json())
 
     def count_things(self) -> CountThingsResponse:
         response = self.client.get("/things/count")
