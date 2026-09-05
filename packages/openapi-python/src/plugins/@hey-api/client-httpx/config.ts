@@ -7,7 +7,7 @@ export const defaultConfig: HeyApiClientHttpxPlugin['Config'] = {
   ...clientDefaultMeta,
   config: {
     ...clientDefaultConfig,
-    asyncMode: true,
+    asyncMode: false,
   },
   handler() {
     // TODO: handler

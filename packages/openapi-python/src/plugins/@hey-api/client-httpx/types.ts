@@ -8,7 +8,9 @@ export type UserConfig = Plugin.Name<'@hey-api/client-httpx'> & {
    * method names, so switching a call site from sync to async is just
    * adding `await`.
    *
-   * @default true
+   * Off by default, so an existing output does not grow without being asked.
+   *
+   * @default false
    */
   asyncMode?: boolean;
   /**

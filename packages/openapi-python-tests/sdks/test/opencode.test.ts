@@ -41,7 +41,11 @@ describe(`Python SDK: ${namespace}`, () => {
       config: createConfig({
         input: asyncSpecPath,
         output: 'async',
-        plugins: ['pydantic', { name: '@hey-api/python-sdk', paramsStructure: 'flat' }],
+        plugins: [
+          'pydantic',
+          { asyncMode: true, name: '@hey-api/client-httpx' },
+          { name: '@hey-api/python-sdk', paramsStructure: 'flat' },
+        ],
       }),
       description: 'async client-httpx',
     },
