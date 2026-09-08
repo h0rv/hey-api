@@ -12,6 +12,8 @@ import { $ } from '../../../../py-dsl';
 import { createOperationComment } from '../../../shared/utils/operation';
 import type { OperationResponse } from '../shared/operation';
 import { operationParameters, operationResponse } from '../shared/operation';
+import type { OperationPagination } from '../shared/pagination';
+import { operationPaginationInfo } from '../shared/pagination';
 import type { HeyApiSdkPlugin } from '../types';
 
 export interface OperationItem {
@@ -117,22 +119,71 @@ function localName(preferred: string, taken: ReadonlySet<string>): string {
   return name;
 }
 
-function implementResponse<T extends ReturnType<typeof $.method>>(args: {
+/**
+ * Returns a page, built from the parsed response and the method itself, so the
+ * page can ask for the one after it.
+ */
+function returnPage<T extends ReturnType<typeof $.method>>(args: {
+  methodName: string;
   node: T;
-  paramNames: ReadonlySet<string>;
+  pageVar: string;
+  pagination: OperationPagination;
+  paramNames: ReadonlyArray<string>;
+  plugin: HeyApiSdkPlugin['Instance'];
+}): T {
+  const { methodName, node, pageVar, pagination, paramNames, plugin } = args;
+
+  const kwargs = $.dict();
+  for (const name of paramNames) {
+    if (name === pagination.parameter) continue;
+    kwargs.entry($.literal(name), $(name));
+  }
+
+  const nextParams = $.dict();
+  nextParams.entry($.literal(pagination.parameter), $(pageVar).attr(pagination.nextCursor));
+
+  return node.returns($.subscript(plugin.imports.Page, pagination.itemSymbol) as never).do(
+    $(plugin.imports.Page)
+      .call(
+        $.kwarg('items', $.binary($(pageVar).attr(pagination.items), 'or', $.list())),
+        $.kwarg('has_more', $(pageVar).attr(pagination.hasMore)),
+        $.kwarg('fetch', $('self').attr(methodName)),
+        $.kwarg('kwargs', kwargs),
+        $.kwarg('next_params', nextParams),
+      )
+      .return(),
+  ) as T;
+}
+
+function implementResponse<T extends ReturnType<typeof $.method>>(args: {
+  methodName: string;
+  node: T;
+  pagination: OperationPagination | undefined;
+  paramNames: ReadonlyArray<string>;
+  plugin: HeyApiSdkPlugin['Instance'];
   requestCall: ReturnType<typeof $.call>;
   response: OperationResponse;
 }): T {
-  const { node, paramNames, requestCall, response } = args;
+  const { methodName, node, pagination, paramNames, plugin, requestCall, response } = args;
+  const taken = new Set(paramNames);
 
   if (response.kind === 'model') {
-    const responseVar = localName('response', paramNames);
+    const responseVar = localName('response', taken);
     const body =
       response.parseAs === 'json'
         ? $(responseVar).attr('json').call()
         : response.parseAs === 'text'
           ? $(responseVar).attr('text')
           : $(responseVar).attr('content');
+
+    if (pagination) {
+      const pageVar = localName('page', taken);
+      node
+        .do($.var(responseVar).assign(requestCall))
+        .do($.var(pageVar).assign($(response.symbol).attr('model_validate').call(body)));
+      return returnPage({ methodName, node, pageVar, pagination, paramNames, plugin });
+    }
+
     return node
       .returns(response.symbol)
       .do($.var(responseVar).assign(requestCall))
@@ -147,14 +198,16 @@ function implementResponse<T extends ReturnType<typeof $.method>>(args: {
 }
 
 function implementFn<T extends ReturnType<typeof $.method>>(args: {
+  methodName: string;
   node: T;
   operation: IR.OperationObject;
   plugin: HeyApiSdkPlugin['Instance'];
 }): T {
-  const { node, operation, plugin } = args;
+  const { methodName, node, operation, plugin } = args;
   const method = operation.method.toLowerCase();
   const opParameters = operationParameters({ operation, plugin });
   const response = operationResponse({ operation, plugin });
+  const pagination = operationPaginationInfo({ operation, plugin });
 
   if (plugin.config.paramsStructure === 'flat' && opParameters.fields.length) {
     const paramNames = opParameters.parameters.map((parameter) => parameter.name.toString());
@@ -183,8 +236,11 @@ function implementFn<T extends ReturnType<typeof $.method>>(args: {
       );
 
     return implementResponse({
+      methodName,
       node,
-      paramNames: new Set(paramNames),
+      pagination,
+      paramNames,
+      plugin,
       requestCall: $('self')
         .attr('client')
         .attr(method)
@@ -196,8 +252,11 @@ function implementFn<T extends ReturnType<typeof $.method>>(args: {
   node.params(...opParameters.parameters);
 
   return implementResponse({
+    methodName,
     node,
-    paramNames: new Set(opParameters.parameters.map((parameter) => parameter.name.toString())),
+    pagination,
+    paramNames: opParameters.parameters.map((parameter) => parameter.name.toString()),
+    plugin,
     requestCall: $('self').attr('client').attr(method).call($.literal(operation.path)),
     response,
   });
@@ -238,8 +297,10 @@ export function toNode(
       // TODO: function?
     } else {
       if (index > 0 || node.hasBody) node.newline();
+      const fnSymbol = createFnSymbol(plugin, item);
       const method = implementFn({
-        node: $.method(createFnSymbol(plugin, item), (m) =>
+        methodName: fnSymbol.name,
+        node: $.method(fnSymbol, (m) =>
           attachComment({
             node: m,
             operation,

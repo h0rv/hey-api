@@ -13,6 +13,7 @@ const snapshotsDir = path.join(getSnapshotsPath(), namespace);
 
 const specPath = path.join(getSpecsPath(), '3.1.x', 'opencode.yaml');
 const responsesSpecPath = path.join(getSpecsPath(), '3.1.x', 'python-responses.json');
+const paginationSpecPath = path.join(getSpecsPath(), '3.1.x', 'python-pagination.json');
 
 describe(`Python SDK: ${namespace}`, () => {
   const createConfig = createSdkConfig({
@@ -35,6 +36,21 @@ describe(`Python SDK: ${namespace}`, () => {
         plugins: ['pydantic', '@hey-api/python-sdk'],
       }),
       description: 'responses',
+    },
+    {
+      config: createConfig({
+        input: paginationSpecPath,
+        output: 'pagination',
+        plugins: [
+          'pydantic',
+          {
+            name: '@hey-api/python-sdk',
+            pagination: { hasMore: 'has_more', items: 'data', nextCursor: 'next_cursor' },
+            paramsStructure: 'flat',
+          },
+        ],
+      }),
+      description: 'pagination',
     },
   ];
 
