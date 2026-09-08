@@ -33,6 +33,21 @@ function isUnparsableTopLevelSchema(schema: IR.SchemaObject): boolean {
   );
 }
 
+/** The schema a `$ref` points at, or nothing when it cannot be resolved. */
+function resolveIrRef({
+  $ref,
+  plugin,
+}: {
+  $ref: string;
+  plugin: HeyApiSdkPlugin['Instance'];
+}): IR.SchemaObject | undefined {
+  try {
+    return plugin.context.resolveIrRef<IR.SchemaObject>($ref);
+  } catch {
+    return undefined;
+  }
+}
+
 export function operationResponse({
   operation,
   plugin,
@@ -75,6 +90,24 @@ export function operationResponse({
     return { kind: 'raw' };
   }
 
+  const parseAs = mediaTypeToParseAs(bodyResponses[0]!.mediaType!);
+
+  // A response that is nothing but a `$ref` returns the referenced model, as
+  // in the TypeScript SDK, rather than a per-operation `RootModel` wrapping it.
+  if (response.$ref) {
+    const target = resolveIrRef({ $ref: response.$ref, plugin });
+    if (target && !isUnparsableTopLevelSchema(target)) {
+      return {
+        kind: 'model',
+        parseAs,
+        symbol: plugin.referenceSymbol({
+          category: 'schema',
+          resourceId: response.$ref,
+        }),
+      };
+    }
+  }
+
   const symbol = plugin.querySymbol({
     category: 'schema',
     resource: 'operation',
@@ -86,7 +119,7 @@ export function operationResponse({
     return { kind: 'raw' };
   }
 
-  return { kind: 'model', parseAs: mediaTypeToParseAs(bodyResponses[0]!.mediaType!), symbol };
+  return { kind: 'model', parseAs, symbol };
 }
 
 type OperationParameters = {

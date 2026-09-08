@@ -311,6 +311,23 @@
           }
         }
       }
+    },
+    "/things/{thing_id}/missing": {
+      "get": {
+        "operationId": "getThingMissingRef",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoesNotExist"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

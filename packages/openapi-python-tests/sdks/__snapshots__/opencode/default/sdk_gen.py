@@ -3,7 +3,7 @@
 from functools import cached_property
 
 from .client import Client
-from .pydantic_gen import AppAgentsResponse, AppLogResponse, AppSkillsResponse, AuthRemoveResponse, AuthSetResponse, CommandListResponse, ConfigGetResponse, ConfigProvidersResponse, ConfigUpdateResponse, EventSubscribeResponse, ExperimentalConsoleGetResponse, ExperimentalConsoleListOrgsResponse, ExperimentalConsoleSwitchOrgResponse, ExperimentalResourceListResponse, ExperimentalSessionListResponse, ExperimentalWorkspaceAdapterListResponse, ExperimentalWorkspaceCreateResponse, ExperimentalWorkspaceListResponse, ExperimentalWorkspaceRemoveResponse, ExperimentalWorkspaceStatusResponse, FileListResponse, FileReadResponse, FileStatusResponse, FindFilesResponse, FindSymbolsResponse, FindTextResponse, FormatterStatusResponse, GlobalConfigGetResponse, GlobalConfigUpdateResponse, GlobalDisposeResponse, GlobalEventResponse, GlobalHealthResponse, GlobalUpgradeResponse, InstanceDisposeResponse, LspStatusResponse, McpAddResponse, McpAuthAuthenticateResponse, McpAuthCallbackResponse, McpAuthRemoveResponse, McpAuthStartResponse, McpConnectResponse, McpDisconnectResponse, McpStatusResponse, PartDeleteResponse, PartUpdateResponse, PathGetResponse, PermissionListResponse, PermissionReplyResponse, PermissionRespondResponse, ProjectCurrentResponse, ProjectInitGitResponse, ProjectListResponse, ProjectUpdateResponse, ProviderAuthResponse, ProviderListResponse, ProviderOauthAuthorizeResponse, ProviderOauthCallbackResponse, PtyConnectResponse, PtyConnectTokenResponse, PtyCreateResponse, PtyGetResponse, PtyListResponse, PtyRemoveResponse, PtyShellsResponse, PtyUpdateResponse, QuestionListResponse, QuestionRejectResponse, QuestionReplyResponse, SessionAbortResponse, SessionChildrenResponse, SessionCommandResponse, SessionCreateResponse, SessionDeleteMessageResponse, SessionDeleteResponse, SessionDiffResponse, SessionForkResponse, SessionGetResponse, SessionInitResponse, SessionListResponse, SessionMessageResponse, SessionMessagesResponse, SessionPromptResponse, SessionRevertResponse, SessionShareResponse, SessionShellResponse, SessionStatusResponse, SessionSummarizeResponse, SessionTodoResponse, SessionUnrevertResponse, SessionUnshareResponse, SessionUpdateResponse, SyncHistoryListResponse, SyncReplayResponse, SyncStartResponse, SyncStealResponse, ToolIdsResponse, ToolListResponse, TuiAppendPromptResponse, TuiClearPromptResponse, TuiControlNextResponse, TuiControlResponseResponse, TuiExecuteCommandResponse, TuiOpenHelpResponse, TuiOpenModelsResponse, TuiOpenSessionsResponse, TuiOpenThemesResponse, TuiPublishResponse, TuiSelectSessionResponse, TuiShowToastResponse, TuiSubmitPromptResponse, V2ModelListResponse, V2ProviderGetResponse, V2ProviderListResponse, V2SessionContextResponse, V2SessionListResponse, V2SessionMessagesResponse_, V2SessionPromptResponse, VcsApplyResponse, VcsDiffRawResponse, VcsDiffResponse, VcsGetResponse, VcsStatusResponse, WorktreeCreateResponse, WorktreeListResponse, WorktreeRemoveResponse, WorktreeResetResponse
+from .pydantic_gen import AppAgentsResponse, AppLogResponse, AppSkillsResponse, AuthRemoveResponse, AuthSetResponse, CommandListResponse, Config as Config_2, ConfigProvidersResponse, ConsoleState, Event as Event_, ExperimentalConsoleListOrgsResponse, ExperimentalConsoleSwitchOrgResponse, ExperimentalResourceListResponse, ExperimentalSessionListResponse, ExperimentalWorkspaceAdapterListResponse, ExperimentalWorkspaceListResponse, ExperimentalWorkspaceStatusResponse, FileContent, FileListResponse, FileStatusResponse, FindFilesResponse, FindSymbolsResponse, FindTextResponse, FormatterStatusResponse, GlobalDisposeResponse, GlobalEvent, GlobalHealthResponse, GlobalUpgradeResponse, InstanceDisposeResponse, LspStatusResponse, McpAddResponse, McpAuthRemoveResponse, McpAuthStartResponse, McpConnectResponse, McpDisconnectResponse, McpStatus, McpStatusResponse, Part as Part_, PartDeleteResponse, Path as Path_, PermissionListResponse, PermissionReplyResponse, PermissionRespondResponse, Project as Project_, ProjectListResponse, ProviderAuthAuthorization, ProviderAuthResponse, ProviderListResponse, ProviderOauthCallbackResponse, ProviderV2Info, Pty as Pty_, PtyConnectResponse, PtyConnectTokenResponse, PtyListResponse, PtyRemoveResponse, PtyShellsResponse, QuestionListResponse, QuestionRejectResponse, QuestionReplyResponse, Session as Session_3, SessionAbortResponse, SessionChildrenResponse, SessionCommandResponse, SessionDeleteMessageResponse, SessionDeleteResponse, SessionDiffResponse, SessionInitResponse, SessionListResponse, SessionMessage, SessionMessageResponse, SessionMessagesResponse, SessionPromptResponse, SessionShellResponse, SessionStatusResponse, SessionSummarizeResponse, SessionTodoResponse, SyncHistoryListResponse, SyncReplayResponse, SyncStartResponse, SyncStealResponse, ToolIds, ToolList, TuiAppendPromptResponse, TuiClearPromptResponse, TuiControlNextResponse, TuiControlResponseResponse, TuiExecuteCommandResponse, TuiOpenHelpResponse, TuiOpenModelsResponse, TuiOpenSessionsResponse, TuiOpenThemesResponse, TuiPublishResponse, TuiSelectSessionResponse, TuiShowToastResponse, TuiSubmitPromptResponse, V2ModelListResponse, V2ProviderListResponse, V2SessionContextResponse, V2SessionMessagesResponse, V2SessionsResponse, VcsApplyResponse, VcsDiffRawResponse, VcsDiffResponse, VcsInfo, VcsStatusResponse, Workspace as Workspace_, Worktree as Worktree_, WorktreeListResponse, WorktreeRemoveResponse, WorktreeResetResponse
 
 
 class Auth(Client):
@@ -56,23 +56,23 @@ class App(Client):
 
 
 class Config(Client):
-    def get(self) -> GlobalConfigGetResponse:
+    def get(self) -> Config_2:
         """Get global configuration
 
         Retrieve the current global OpenCode configuration settings and preferences.
         """
 
         response = self.client.get("/global/config")
-        return GlobalConfigGetResponse.model_validate(response.json())
+        return Config_2.model_validate(response.json())
 
-    def update(self) -> GlobalConfigUpdateResponse:
+    def update(self) -> Config_2:
         """Update global configuration
 
         Update global OpenCode configuration settings and preferences.
         """
 
         response = self.client.patch("/global/config")
-        return GlobalConfigUpdateResponse.model_validate(response.json())
+        return Config_2.model_validate(response.json())
 
 
 class Global(Client):
@@ -85,14 +85,14 @@ class Global(Client):
         response = self.client.get("/global/health")
         return GlobalHealthResponse.model_validate(response.json())
 
-    def event(self) -> GlobalEventResponse:
+    def event(self) -> GlobalEvent:
         """Get global events
 
         Subscribe to global events from the OpenCode system using server-sent events.
         """
 
         response = self.client.get("/global/event")
-        return GlobalEventResponse.model_validate(response.text)
+        return GlobalEvent.model_validate(response.text)
 
     def dispose(self) -> GlobalDisposeResponse:
         """Dispose instance
@@ -118,34 +118,34 @@ class Global(Client):
 
 
 class Event(Client):
-    def subscribe(self) -> EventSubscribeResponse:
+    def subscribe(self) -> Event_:
         """Subscribe to events
 
         Get events
         """
 
         response = self.client.get("/event")
-        return EventSubscribeResponse.model_validate(response.text)
+        return Event_.model_validate(response.text)
 
 
 class Config_(Client):
-    def get(self) -> ConfigGetResponse:
+    def get(self) -> Config_2:
         """Get configuration
 
         Retrieve the current OpenCode configuration settings and preferences.
         """
 
         response = self.client.get("/config")
-        return ConfigGetResponse.model_validate(response.json())
+        return Config_2.model_validate(response.json())
 
-    def update(self) -> ConfigUpdateResponse:
+    def update(self) -> Config_2:
         """Update configuration
 
         Update OpenCode configuration settings and preferences.
         """
 
         response = self.client.patch("/config")
-        return ConfigUpdateResponse.model_validate(response.json())
+        return Config_2.model_validate(response.json())
 
     def providers(self) -> ConfigProvidersResponse:
         """List config providers
@@ -158,14 +158,14 @@ class Config_(Client):
 
 
 class Console(Client):
-    def get(self) -> ExperimentalConsoleGetResponse:
+    def get(self) -> ConsoleState:
         """Get active Console provider metadata
 
         Get the active Console org name and the set of provider IDs managed by that Console org.
         """
 
         response = self.client.get("/experimental/console")
-        return ExperimentalConsoleGetResponse.model_validate(response.json())
+        return ConsoleState.model_validate(response.json())
 
     def list_orgs(self) -> ExperimentalConsoleListOrgsResponse:
         """List switchable Console orgs
@@ -229,14 +229,14 @@ class Workspace(Client):
         response = self.client.get("/experimental/workspace")
         return ExperimentalWorkspaceListResponse.model_validate(response.json())
 
-    def create(self) -> ExperimentalWorkspaceCreateResponse:
+    def create(self) -> Workspace_:
         """Create workspace
 
         Create a workspace for the current project.
         """
 
         response = self.client.post("/experimental/workspace")
-        return ExperimentalWorkspaceCreateResponse.model_validate(response.json())
+        return Workspace_.model_validate(response.json())
 
     def sync_list(self) -> None:
         """Sync workspace list
@@ -256,14 +256,14 @@ class Workspace(Client):
         response = self.client.get("/experimental/workspace/status")
         return ExperimentalWorkspaceStatusResponse.model_validate(response.json())
 
-    def remove(self) -> ExperimentalWorkspaceRemoveResponse:
+    def remove(self) -> Workspace_:
         """Remove workspace
 
         Remove an existing workspace.
         """
 
         response = self.client.delete("/experimental/workspace/{id}")
-        return ExperimentalWorkspaceRemoveResponse.model_validate(response.json())
+        return Workspace_.model_validate(response.json())
 
     def warp(self) -> None:
         """Warp session into workspace
@@ -298,23 +298,23 @@ class Experimental(Client):
 
 
 class Tool(Client):
-    def list(self) -> ToolListResponse:
+    def list(self) -> ToolList:
         """List tools
 
         Get a list of available tools with their JSON schema parameters for a specific provider and model combination.
         """
 
         response = self.client.get("/experimental/tool")
-        return ToolListResponse.model_validate(response.json())
+        return ToolList.model_validate(response.json())
 
-    def ids(self) -> ToolIdsResponse:
+    def ids(self) -> ToolIds:
         """List tool IDs
 
         Get a list of all available tool IDs, including both built-in tools and dynamically registered tools.
         """
 
         response = self.client.get("/experimental/tool/ids")
-        return ToolIdsResponse.model_validate(response.json())
+        return ToolIds.model_validate(response.json())
 
 
 class Worktree(Client):
@@ -336,14 +336,14 @@ class Worktree(Client):
         response = self.client.get("/experimental/worktree")
         return WorktreeListResponse.model_validate(response.json())
 
-    def create(self) -> WorktreeCreateResponse:
+    def create(self) -> Worktree_:
         """Create worktree
 
         Create a new git worktree for the current project and run any configured startup scripts.
         """
 
         response = self.client.post("/experimental/worktree")
-        return WorktreeCreateResponse.model_validate(response.json())
+        return Worktree_.model_validate(response.json())
 
     def reset(self) -> WorktreeResetResponse:
         """Reset worktree
@@ -394,14 +394,14 @@ class File(Client):
         response = self.client.get("/file")
         return FileListResponse.model_validate(response.json())
 
-    def read(self) -> FileReadResponse:
+    def read(self) -> FileContent:
         """Read file
 
         Read the content of a specified file.
         """
 
         response = self.client.get("/file/content")
-        return FileReadResponse.model_validate(response.json())
+        return FileContent.model_validate(response.json())
 
     def status(self) -> FileStatusResponse:
         """Get file status
@@ -425,14 +425,14 @@ class Instance(Client):
 
 
 class Path(Client):
-    def get(self) -> PathGetResponse:
+    def get(self) -> Path_:
         """Get paths
 
         Retrieve the current working directory and related path information for the OpenCode instance.
         """
 
         response = self.client.get("/path")
-        return PathGetResponse.model_validate(response.json())
+        return Path_.model_validate(response.json())
 
 
 class Diff(Client):
@@ -447,14 +447,14 @@ class Diff(Client):
 
 
 class Vcs(Client):
-    def get(self) -> VcsGetResponse:
+    def get(self) -> VcsInfo:
         """Get VCS info
 
         Retrieve version control system (VCS) information for the current project, such as git branch.
         """
 
         response = self.client.get("/vcs")
-        return VcsGetResponse.model_validate(response.json())
+        return VcsInfo.model_validate(response.json())
 
     def status(self) -> VcsStatusResponse:
         """Get VCS status
@@ -540,23 +540,23 @@ class Auth_(Client):
         response = self.client.post("/mcp/{name}/auth")
         return McpAuthStartResponse.model_validate(response.json())
 
-    def callback(self) -> McpAuthCallbackResponse:
+    def callback(self) -> McpStatus:
         """Complete MCP OAuth
 
         Complete OAuth authentication for a Model Context Protocol (MCP) server using the authorization code.
         """
 
         response = self.client.post("/mcp/{name}/auth/callback")
-        return McpAuthCallbackResponse.model_validate(response.json())
+        return McpStatus.model_validate(response.json())
 
-    def authenticate(self) -> McpAuthAuthenticateResponse:
+    def authenticate(self) -> McpStatus:
         """Authenticate MCP OAuth
 
         Start OAuth flow and wait for callback (opens browser).
         """
 
         response = self.client.post("/mcp/{name}/auth/authenticate")
-        return McpAuthAuthenticateResponse.model_validate(response.json())
+        return McpStatus.model_validate(response.json())
 
 
 class Mcp(Client):
@@ -605,32 +605,32 @@ class Project(Client):
         response = self.client.get("/project")
         return ProjectListResponse.model_validate(response.json())
 
-    def current(self) -> ProjectCurrentResponse:
+    def current(self) -> Project_:
         """Get current project
 
         Retrieve the currently active project that OpenCode is working with.
         """
 
         response = self.client.get("/project/current")
-        return ProjectCurrentResponse.model_validate(response.json())
+        return Project_.model_validate(response.json())
 
-    def init_git(self) -> ProjectInitGitResponse:
+    def init_git(self) -> Project_:
         """Initialize git repository
 
         Create a git repository for the current project and return the refreshed project info.
         """
 
         response = self.client.post("/project/git/init")
-        return ProjectInitGitResponse.model_validate(response.json())
+        return Project_.model_validate(response.json())
 
-    def update(self) -> ProjectUpdateResponse:
+    def update(self) -> Project_:
         """Update project
 
         Update project properties such as name, icon, and commands.
         """
 
         response = self.client.patch("/project/{projectID}")
-        return ProjectUpdateResponse.model_validate(response.json())
+        return Project_.model_validate(response.json())
 
 
 class Pty(Client):
@@ -652,14 +652,14 @@ class Pty(Client):
         response = self.client.get("/pty")
         return PtyListResponse.model_validate(response.json())
 
-    def create(self) -> PtyCreateResponse:
+    def create(self) -> Pty_:
         """Create PTY session
 
         Create a new pseudo-terminal (PTY) session for running shell commands and processes.
         """
 
         response = self.client.post("/pty")
-        return PtyCreateResponse.model_validate(response.json())
+        return Pty_.model_validate(response.json())
 
     def remove(self) -> PtyRemoveResponse:
         """Remove PTY session
@@ -670,23 +670,23 @@ class Pty(Client):
         response = self.client.delete("/pty/{ptyID}")
         return PtyRemoveResponse.model_validate(response.json())
 
-    def get(self) -> PtyGetResponse:
+    def get(self) -> Pty_:
         """Get PTY session
 
         Retrieve detailed information about a specific pseudo-terminal (PTY) session.
         """
 
         response = self.client.get("/pty/{ptyID}")
-        return PtyGetResponse.model_validate(response.json())
+        return Pty_.model_validate(response.json())
 
-    def update(self) -> PtyUpdateResponse:
+    def update(self) -> Pty_:
         """Update PTY session
 
         Update properties of an existing pseudo-terminal (PTY) session.
         """
 
         response = self.client.put("/pty/{ptyID}")
-        return PtyUpdateResponse.model_validate(response.json())
+        return Pty_.model_validate(response.json())
 
     def connect_token(self) -> PtyConnectTokenResponse:
         """Create PTY WebSocket token
@@ -768,14 +768,14 @@ class Permission(Client):
 
 
 class Oauth(Client):
-    def authorize(self) -> ProviderOauthAuthorizeResponse:
+    def authorize(self) -> ProviderAuthAuthorization:
         """Start OAuth authorization
 
         Start the OAuth authorization flow for a provider.
         """
 
         response = self.client.post("/provider/{providerID}/oauth/authorize")
-        return ProviderOauthAuthorizeResponse.model_validate(response.json())
+        return ProviderAuthAuthorization.model_validate(response.json())
 
     def callback(self) -> ProviderOauthCallbackResponse:
         """Handle OAuth callback
@@ -821,14 +821,14 @@ class Session_(Client):
         response = self.client.get("/session")
         return SessionListResponse.model_validate(response.json())
 
-    def create(self) -> SessionCreateResponse:
+    def create(self) -> Session_3:
         """Create session
 
         Create a new OpenCode session for interacting with AI assistants and managing conversations.
         """
 
         response = self.client.post("/session")
-        return SessionCreateResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
     def status(self) -> SessionStatusResponse:
         """Get session status
@@ -848,23 +848,23 @@ class Session_(Client):
         response = self.client.delete("/session/{sessionID}")
         return SessionDeleteResponse.model_validate(response.json())
 
-    def get(self) -> SessionGetResponse:
+    def get(self) -> Session_3:
         """Get session
 
         Retrieve detailed information about a specific OpenCode session.
         """
 
         response = self.client.get("/session/{sessionID}")
-        return SessionGetResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
-    def update(self) -> SessionUpdateResponse:
+    def update(self) -> Session_3:
         """Update session
 
         Update properties of an existing session, such as title or other metadata.
         """
 
         response = self.client.patch("/session/{sessionID}")
-        return SessionUpdateResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
     def children(self) -> SessionChildrenResponse:
         """Get session children
@@ -929,14 +929,14 @@ class Session_(Client):
         response = self.client.get("/session/{sessionID}/message/{messageID}")
         return SessionMessageResponse.model_validate(response.json())
 
-    def fork(self) -> SessionForkResponse:
+    def fork(self) -> Session_3:
         """Fork session
 
         Create a new session by forking an existing session at a specific message point.
         """
 
         response = self.client.post("/session/{sessionID}/fork")
-        return SessionForkResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
     def abort(self) -> SessionAbortResponse:
         """Abort session
@@ -956,23 +956,23 @@ class Session_(Client):
         response = self.client.post("/session/{sessionID}/init")
         return SessionInitResponse.model_validate(response.json())
 
-    def unshare(self) -> SessionUnshareResponse:
+    def unshare(self) -> Session_3:
         """Unshare session
 
         Remove the shareable link for a session, making it private again.
         """
 
         response = self.client.delete("/session/{sessionID}/share")
-        return SessionUnshareResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
-    def share(self) -> SessionShareResponse:
+    def share(self) -> Session_3:
         """Share session
 
         Create a shareable link for a session, allowing others to view the conversation.
         """
 
         response = self.client.post("/session/{sessionID}/share")
-        return SessionShareResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
     def summarize(self) -> SessionSummarizeResponse:
         """Summarize session
@@ -1010,23 +1010,23 @@ class Session_(Client):
         response = self.client.post("/session/{sessionID}/shell")
         return SessionShellResponse.model_validate(response.json())
 
-    def revert(self) -> SessionRevertResponse:
+    def revert(self) -> Session_3:
         """Revert message
 
         Revert a specific message in a session, undoing its effects and restoring the previous state.
         """
 
         response = self.client.post("/session/{sessionID}/revert")
-        return SessionRevertResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
-    def unrevert(self) -> SessionUnrevertResponse:
+    def unrevert(self) -> Session_3:
         """Restore reverted messages
 
         Restore all previously reverted messages in a session.
         """
 
         response = self.client.post("/session/{sessionID}/unrevert")
-        return SessionUnrevertResponse.model_validate(response.json())
+        return Session_3.model_validate(response.json())
 
 
 class Part(Client):
@@ -1036,11 +1036,11 @@ class Part(Client):
         response = self.client.delete("/session/{sessionID}/message/{messageID}/part/{partID}")
         return PartDeleteResponse.model_validate(response.json())
 
-    def update(self) -> PartUpdateResponse:
+    def update(self) -> Part_:
         """Update a part in a message."""
 
         response = self.client.patch("/session/{sessionID}/message/{messageID}/part/{partID}")
-        return PartUpdateResponse.model_validate(response.json())
+        return Part_.model_validate(response.json())
 
 
 class History(Client):
@@ -1088,23 +1088,23 @@ class Sync(Client):
 
 
 class Session_2(Client):
-    def list(self) -> V2SessionListResponse:
+    def list(self) -> V2SessionsResponse:
         """List v2 sessions
 
         Retrieve sessions in the requested order. Items keep that order across pages; use cursor.next or cursor.previous to move through the ordered list.
         """
 
         response = self.client.get("/api/session")
-        return V2SessionListResponse.model_validate(response.json())
+        return V2SessionsResponse.model_validate(response.json())
 
-    def prompt(self) -> V2SessionPromptResponse:
+    def prompt(self) -> SessionMessage:
         """Send v2 message
 
         Create a v2 session message and queue it for the agent loop.
         """
 
         response = self.client.post("/api/session/{sessionID}/prompt")
-        return V2SessionPromptResponse.model_validate(response.json())
+        return SessionMessage.model_validate(response.json())
 
     def compact(self) -> None:
         """Compact v2 session
@@ -1133,14 +1133,14 @@ class Session_2(Client):
         response = self.client.get("/api/session/{sessionID}/context")
         return V2SessionContextResponse.model_validate(response.json())
 
-    def messages(self) -> V2SessionMessagesResponse_:
+    def messages(self) -> V2SessionMessagesResponse:
         """Get v2 session messages
 
         Retrieve projected v2 messages for a session. Items keep the requested order across pages; use cursor.next or cursor.previous to move through the ordered timeline.
         """
 
         response = self.client.get("/api/session/{sessionID}/message")
-        return V2SessionMessagesResponse_.model_validate(response.json())
+        return V2SessionMessagesResponse.model_validate(response.json())
 
 
 class Model(Client):
@@ -1164,14 +1164,14 @@ class Provider_(Client):
         response = self.client.get("/api/provider")
         return V2ProviderListResponse.model_validate(response.json())
 
-    def get(self) -> V2ProviderGetResponse:
+    def get(self) -> ProviderV2Info:
         """Get v2 provider
 
         Retrieve a single v2 AI provider so clients can inspect its availability and endpoint settings.
         """
 
         response = self.client.get("/api/provider/{providerID}")
-        return V2ProviderGetResponse.model_validate(response.json())
+        return ProviderV2Info.model_validate(response.json())
 
 
 class V2(Client):
