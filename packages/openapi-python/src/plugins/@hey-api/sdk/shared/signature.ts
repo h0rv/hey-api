@@ -2,6 +2,7 @@ import type { IR } from '@hey-api/shared';
 import { refToName, toCase } from '@hey-api/shared';
 
 import { safeRuntimeName } from '../../../../py-dsl/utils/name';
+import type { HeyApiSdkPlugin } from '../types';
 
 type Location = keyof IR.ParametersObject | 'body';
 
@@ -27,6 +28,30 @@ type Signature = {
   parameters: SignatureParameters;
 };
 
+/**
+ * Can the client supply this parameter, so a method need not require it?
+ *
+ * A path parameter never qualifies. Its value belongs to the URL of one call,
+ * and the client has nothing to put in the placeholder.
+ */
+function isClientParameter({
+  location,
+  name,
+  plugin,
+}: {
+  location: Location;
+  name: string;
+  plugin: HeyApiSdkPlugin['Instance'];
+}): boolean {
+  if (location === 'path') return false;
+
+  return plugin.config.clientParameters.some((clientParameter) =>
+    location === 'header'
+      ? clientParameter.toLowerCase() === name.toLowerCase()
+      : clientParameter === name,
+  );
+}
+
 // `X-Foo` and `X_Foo` both convert to `x_foo`, so a taken name gets a suffix.
 function toPythonName(name: string, taken: SignatureParameters): string {
   let pythonName = safeRuntimeName(toCase(name, 'snake_case'));
@@ -38,8 +63,10 @@ function toPythonName(name: string, taken: SignatureParameters): string {
 
 export function getSignatureParameters({
   operation,
+  plugin,
 }: {
   operation: IR.OperationObject;
+  plugin: HeyApiSdkPlugin['Instance'];
 }): Signature | undefined {
   const locations = ['header', 'path', 'query'] as const satisfies ReadonlyArray<Location>;
   const nameToLocations: Record<string, Set<Location>> = {};
@@ -102,7 +129,9 @@ export function getSignatureParameters({
         );
         const signatureParameter: SignatureParameter = {
           in: location,
-          isRequired: parameter.required ?? false,
+          isRequired:
+            (parameter.required ?? false) &&
+            !isClientParameter({ location, name: originalName, plugin }),
           name,
           schema: parameter.schema,
         };
