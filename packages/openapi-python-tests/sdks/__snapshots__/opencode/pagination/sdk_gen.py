@@ -3,7 +3,7 @@
 from typing import Optional
 
 from .client import build_client_params, Client, Page
-from .pydantic_gen import GadgetList, SprocketList, ThingList, Widget, WidgetList
+from .pydantic_gen import Cog, CogList, GadgetList, PulleyList, SprocketList, ThingList, Widget, WidgetList
 
 
 class Sdk(Client):
@@ -26,3 +26,14 @@ class Sdk(Client):
         params = build_client_params([{"in": "query", "key": "cursor"}], cursor="cursor")
         response = self.client.get("/sprockets", params=params)
         return SprocketList.model_validate(response.json())
+
+    def list_cogs(self, page: Optional[int] = None, page_size: Optional[int] = None) -> Page[Cog]:
+        params = build_client_params([{"in": "query", "key": "page"}, {"in": "query", "key": "page_size"}], page="page", page_size="page_size")
+        response = self.client.get("/cogs", params=params)
+        page_ = CogList.model_validate(response.json())
+        return Page(items=page_.data or [], has_more=page_.has_more, fetch=self.list_cogs, kwargs={"page_size": page_size}, next_params={"page": (page_.page or 0) + 1})
+
+    def list_pulleys(self, page: Optional[int] = None, page_size: Optional[int] = None) -> PulleyList:
+        params = build_client_params([{"in": "query", "key": "page"}, {"in": "query", "key": "page_size"}], page="page", page_size="page_size")
+        response = self.client.get("/pulleys", params=params)
+        return PulleyList.model_validate(response.json())

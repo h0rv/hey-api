@@ -45,7 +45,12 @@ describe(`Python SDK: ${namespace}`, () => {
           'pydantic',
           {
             name: '@hey-api/python-sdk',
-            pagination: { hasMore: 'has_more', items: 'data', nextCursor: 'next_cursor' },
+            pagination: {
+              hasMore: 'has_more',
+              items: 'data',
+              nextCursor: 'next_cursor',
+              pageNumber: 'page',
+            },
             paramsStructure: 'flat',
           },
         ],

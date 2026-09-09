@@ -139,8 +139,17 @@ function returnPage<T extends ReturnType<typeof $.method>>(args: {
     kwargs.entry($.literal(name), $(name));
   }
 
+  const value = $(pageVar).attr(pagination.next);
   const nextParams = $.dict();
-  nextParams.entry($.literal(pagination.parameter), $(pageVar).attr(pagination.nextCursor));
+  nextParams.entry(
+    $.literal(pagination.parameter),
+    // A page number counts up. `or 0` keeps a response that omits the field
+    // from raising here; the page it then asks for repeats, which the page
+    // reports rather than looping.
+    pagination.style === 'pageNumber'
+      ? $.binary($.binary(value, 'or', $.literal(0)), '+', $.literal(1))
+      : value,
+  );
 
   return node.returns($.subscript(plugin.imports.Page, pagination.itemSymbol) as never).do(
     $(plugin.imports.Page)

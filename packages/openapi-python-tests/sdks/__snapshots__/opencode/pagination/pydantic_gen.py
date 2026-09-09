@@ -42,6 +42,25 @@ class SprocketList(BaseModel):
     next_cursor: Optional[str] = None
 
 
+class Cog(BaseModel):
+    cog_id: str
+
+
+class CogList(BaseModel):
+    data: Optional[list[Cog]] = None
+    has_more: Optional[bool] = None
+    page: Optional[int] = None
+
+
+class Pulley(BaseModel):
+    pulley_id: str
+
+
+class PulleyList(BaseModel):
+    data: Optional[list[Pulley]] = None
+    has_more: Optional[bool] = None
+
+
 class ListWidgetsQuery(BaseModel):
     status: Optional[str] = None
     cursor: Optional[str] = None
@@ -77,3 +96,25 @@ class ListSprocketsResponse(RootModel[SprocketList]):
     """OK"""
 
     root: SprocketList
+
+
+class ListCogsQuery(BaseModel):
+    page: Optional[int] = 1
+    page_size: Optional[int] = None
+
+
+class ListCogsResponse(RootModel[CogList]):
+    """OK"""
+
+    root: CogList
+
+
+class ListPulleysQuery(BaseModel):
+    page: Optional[int] = 1
+    page_size: Optional[int] = None
+
+
+class ListPulleysResponse(RootModel[PulleyList]):
+    """OK"""
+
+    root: PulleyList

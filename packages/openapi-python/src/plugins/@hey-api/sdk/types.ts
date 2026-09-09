@@ -66,8 +66,17 @@ export type UserConfig = Plugin.Name<'@hey-api/python-sdk'> &
           hasMore: string;
           /** Response field holding the items of the page. */
           items: string;
-          /** Response field holding the value that requests the next page. */
-          nextCursor: string;
+          /**
+           * Response field holding the value that requests the next page, for
+           * an operation whose continuation parameter is a cursor.
+           */
+          nextCursor?: string;
+          /**
+           * Response field holding the number of the page it answers, for an
+           * operation whose continuation parameter is a page number. The page
+           * after this one is that number plus one.
+           */
+          pageNumber?: string;
         };
     /**
      * Define how request parameters are structured in generated SDK methods.
@@ -107,7 +116,9 @@ export type Config = Plugin.Name<'@hey-api/python-sdk'> &
      */
     operations: OperationsConfig;
     /** Return a page from a list operation, instead of the response model. */
-    pagination: false | { hasMore: string; items: string; nextCursor: string };
+    pagination:
+      | false
+      | { hasMore: string; items: string; nextCursor?: string; pageNumber?: string };
     /**
      * Define how request parameters are structured in generated SDK methods.
      *

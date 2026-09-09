@@ -11,14 +11,16 @@ export type OperationPagination = {
   itemSymbol: Symbol;
   /** The response field holding the items of the page. */
   items: string;
-  /** The response field holding the value that requests the next page. */
-  nextCursor: string;
+  /** The response field the next request's value is read from. */
+  next: string;
   /** The request parameter that carries that value back. */
   parameter: string;
+  /** Whether that value is sent as it is, or counted up by one. */
+  style: 'cursor' | 'pageNumber';
 };
 
-/** Is the parameter that continues the list optional, so a first call needs no cursor? */
-function isOptional({
+/** The parameter that continues the list, as the operation declares it. */
+function continuationParameter({
   location,
   name,
   operation,
@@ -26,14 +28,14 @@ function isOptional({
   location: keyof IR.ParametersObject;
   name: string;
   operation: IR.OperationObject;
-}): boolean {
+}): IR.ParameterObject | undefined {
   const parameters = operation.parameters?.[location];
   for (const key in parameters) {
     if (parameters[key]!.name === name) {
-      return !parameters[key]!.required;
+      return parameters[key];
     }
   }
-  return false;
+  return undefined;
 }
 
 function property({
@@ -71,9 +73,10 @@ export function operationPaginationInfo({
   if (!pagination || pagination.in === 'body') return;
   const location: keyof IR.ParametersObject = pagination.in;
 
+  const parameter = continuationParameter({ location, name: pagination.name, operation });
   // A required continuation parameter would leave the method without a default
   // for it, so the first page could not be asked for.
-  if (!isOptional({ location, name: pagination.name, operation })) return;
+  if (!parameter || parameter.required) return;
 
   const { response } = operationResponsesMap(operation);
   if (!response) return;
@@ -84,9 +87,15 @@ export function operationPaginationInfo({
   const item = items.items?.[0];
   if (!item?.$ref) return;
 
+  // An integer continues a list by counting up, anything else by carrying a
+  // value the response hands back.
+  const style = parameter.schema.type === 'integer' ? 'pageNumber' : 'cursor';
+  const next = style === 'pageNumber' ? config.pageNumber : config.nextCursor;
+  if (!next) return;
+
   // Reading a field the model does not declare would raise at the call, so an
   // operation missing either field pages the way it did before.
-  for (const field of [config.hasMore, config.nextCursor]) {
+  for (const field of [config.hasMore, next]) {
     if (!property({ field, plugin, schema: response })) return;
   }
 
@@ -94,7 +103,8 @@ export function operationPaginationInfo({
     hasMore: config.hasMore,
     itemSymbol: plugin.referenceSymbol({ category: 'schema', resourceId: item.$ref }),
     items: config.items,
-    nextCursor: config.nextCursor,
+    next,
     parameter: pagination.name,
+    style,
   };
 }

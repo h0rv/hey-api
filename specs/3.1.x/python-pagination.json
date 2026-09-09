@@ -107,6 +107,74 @@
           }
         }
       }
+    },
+    "/cogs": {
+      "get": {
+        "operationId": "list_cogs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CogList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pulleys": {
+      "get": {
+        "operationId": "list_pulleys",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PulleyList"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -203,6 +271,55 @@
           },
           "next_cursor": {
             "type": "string"
+          }
+        }
+      },
+      "Cog": {
+        "type": "object",
+        "properties": {
+          "cog_id": {
+            "type": "string"
+          }
+        },
+        "required": ["cog_id"]
+      },
+      "CogList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cog"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "page": {
+            "type": "integer"
+          }
+        }
+      },
+      "Pulley": {
+        "type": "object",
+        "properties": {
+          "pulley_id": {
+            "type": "string"
+          }
+        },
+        "required": ["pulley_id"]
+      },
+      "PulleyList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pulley"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
           }
         }
       }
